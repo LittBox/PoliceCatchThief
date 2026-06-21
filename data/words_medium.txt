@@ -1,0 +1,4 @@
+exception handling improves program reliability
+standard template library manages data efficiently
+object oriented design separates responsibility
+file input and output are important in cpp
