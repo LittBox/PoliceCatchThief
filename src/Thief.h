@@ -4,9 +4,12 @@
 
 class Thief : public Character {
 public:
+    //构造函数
     Thief();
 
+    
     void update(float dt) override;
+    void draw(sf::RenderWindow& window) const override;
 
     bool checkTurnAround(float policeRouteDistance, float routeLength);
 

@@ -116,3 +116,68 @@ float Thief::getDistanceTo(const sf::Vector2f& targetPosition) const {
 
     return std::sqrt(dx * dx + dy * dy);
 }
+
+void Thief::draw(sf::RenderWindow& window) const {
+    // 1. 身体
+    window.draw(m_shape);
+
+    sf::Vector2f center = m_shape.getPosition();
+    float radius = m_shape.getRadius();
+
+    // 2. 黑色眼罩底框
+    sf::RectangleShape mask;
+    mask.setSize({radius * 1.5f, radius * 0.45f});
+    mask.setOrigin({radius * 1.5f / 2.f, radius * 0.45f / 2.f});
+    mask.setPosition({
+        center.x - radius * 0.10f,
+        center.y - radius * 0.18f
+    });
+    mask.setFillColor(sf::Color::Black);
+    window.draw(mask);
+
+    // 3. 两个白色眼底
+    float eyeRadius = radius * 0.17f;
+    float pupilRadius = radius * 0.075f;
+
+    sf::Vector2f leftEyeCenter(
+        center.x - radius * 0.32f,
+        center.y - radius * 0.18f
+    );
+
+    sf::Vector2f rightEyeCenter(
+        center.x + radius * 0.08f,
+        center.y - radius * 0.18f
+    );
+
+    sf::CircleShape leftEye(eyeRadius);
+    leftEye.setOrigin({eyeRadius, eyeRadius});
+    leftEye.setPosition(leftEyeCenter);
+    leftEye.setFillColor(sf::Color::White);
+
+    sf::CircleShape rightEye(eyeRadius);
+    rightEye.setOrigin({eyeRadius, eyeRadius});
+    rightEye.setPosition(rightEyeCenter);
+    rightEye.setFillColor(sf::Color::White);
+
+    window.draw(leftEye);
+    window.draw(rightEye);
+
+    // 4. 黑色瞳孔，仍然跟随移动方向偏移
+    sf::Vector2f pupilOffset(
+        m_facingDirection.x * eyeRadius * 0.35f,
+        m_facingDirection.y * eyeRadius * 0.35f
+    );
+
+    sf::CircleShape leftPupil(pupilRadius);
+    leftPupil.setOrigin({pupilRadius, pupilRadius});
+    leftPupil.setPosition(leftEyeCenter + pupilOffset);
+    leftPupil.setFillColor(sf::Color::Black);
+
+    sf::CircleShape rightPupil(pupilRadius);
+    rightPupil.setOrigin({pupilRadius, pupilRadius});
+    rightPupil.setPosition(rightEyeCenter + pupilOffset);
+    rightPupil.setFillColor(sf::Color::Black);
+
+    window.draw(leftPupil);
+    window.draw(rightPupil);
+}
