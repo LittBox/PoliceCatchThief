@@ -41,6 +41,7 @@ Game::Game()
             << std::endl;
 }
 
+//游戏主循环，处理事件、更新状态和渲染界面
 void Game::run() {
     std::cout << "[TEST] Game loop started." << std::endl;
 
@@ -57,13 +58,17 @@ void Game::run() {
     std::cout << "[TEST] Game loop finished." << std::endl;
 }
 
+//处理所有窗口事件，包括关闭窗口、鼠标点击和键盘输入
 void Game::processEvents() {
     while (auto event = m_window.pollEvent()) {
+
+        //处理窗口关闭事件
         if (event->is<sf::Event::Closed>()) {
             std::cout << "[TEST] Window closed." << std::endl;
             m_window.close();
         }
 
+        //处理鼠标事件
         if (event->is<sf::Event::MouseButtonPressed>()) {
             const auto* mouseEvent = event->getIf<sf::Event::MouseButtonPressed>();
 
@@ -78,6 +83,7 @@ void Game::processEvents() {
             }
         }
 
+        //处理键盘按下事件，包括Esc、F2、Tab和Enter键
         if (event->is<sf::Event::KeyPressed>()) {
             const auto* keyEvent = event->getIf<sf::Event::KeyPressed>();
 
@@ -141,6 +147,7 @@ void Game::processEvents() {
     }
 }
 
+//根据delta time更新游戏状态，包括计时器、警察和小偷的移动，以及检查游戏是否结束
 void Game::update(float dt) {
     m_cursorTimer += dt;
     if (m_cursorTimer >= 0.5f) {
@@ -194,6 +201,7 @@ void Game::update(float dt) {
     checkGameEnd();
 }
 
+//游戏渲染函数，负责绘制游戏界面，包括游戏区域、路线、角色、信息面板和打字文本
 void Game::render() {
     m_window.clear(sf::Color(25, 25, 30));
     if (m_gameState == GameState::Menu) {
@@ -277,7 +285,7 @@ void Game::render() {
     m_window.display();
 }
 
-
+//初始化游戏布局，包括游戏区域、输入面板、信息面板和帮助面板
 void Game::initLayout() {
     m_gameArea.setSize({860.f, 510.f});
     m_gameArea.setPosition({20.f, 20.f});
@@ -304,6 +312,7 @@ void Game::initLayout() {
     m_helpCard.setOutlineColor(sf::Color(150, 150, 150, 120));
 }
 
+//绘制文本函数，用于在指定位置绘制文本内容，设置字体大小和颜色
 void Game::drawText(
     const std::string& content,
     sf::Vector2f position,
@@ -323,6 +332,7 @@ void Game::drawText(
     m_window.draw(text);
 }
 
+//初始化游戏角色，包括警察和小偷，并设置它们的初始位置和路线距离
 void Game::initCharacters() {
     m_police = std::make_shared<Police>();
     m_thief = std::make_shared<Thief>();
@@ -330,6 +340,7 @@ void Game::initCharacters() {
     m_police->setRouteDistance(0.f);
     m_police->setPosition(m_route.getPositionAt(0.f));
 
+    //小偷的初始位置被设置在路线总长度的 50%（中间位置）。
     const float thiefStartDistance = m_route.getTotalLength() * 0.5f;
     m_thief->setRouteDistance(thiefStartDistance);
     m_thief->setPosition(m_route.getPositionAt(thiefStartDistance));
@@ -340,6 +351,7 @@ void Game::initCharacters() {
     std::cout << "[TEST] Characters initialized." << std::endl;
 }
 
+//用来绘制打字文本的函数，显示目标文本和已输入的部分，并根据光标位置进行滚动
 void Game::drawTypingText() {
     if (!m_fontLoaded) {
         return;
@@ -424,6 +436,7 @@ void Game::drawTypingText() {
     }
 }
 
+//判断游戏是否结束逻辑
 void Game::checkGameEnd() {
     if (m_gameState != GameState::Playing) {
         return;
@@ -443,6 +456,7 @@ void Game::checkGameEnd() {
     }
 }
 
+//辅助函数，用于获取两人物之间的距离
 float Game::getDistanceBetweenCharacters() const {
     if (!m_police || !m_thief) {
         return 999999.f;
@@ -457,6 +471,7 @@ float Game::getDistanceBetweenCharacters() const {
     return std::sqrt(dx * dx + dy * dy);
 }
 
+//重启游戏
 void Game::resetGame() {
     m_gameState = GameState::Playing;
     m_remainingTime = m_timeLimit;
@@ -483,6 +498,7 @@ void Game::resetGame() {
     m_cursorVisible = true;
 }
 
+//绘制游戏结果覆盖层，根据游戏状态显示胜利或失败信息，并提供重新开始或退出的提示
 void Game::drawGameResultOverlay() {
     if (!m_fontLoaded || m_gameState == GameState::Playing) {
         return;
@@ -535,6 +551,7 @@ void Game::drawGameResultOverlay() {
     );
 }
 
+//应用难度设置，包括时间限制、捕获距离和加载目标文本
 void Game::startGame(const std::string& difficultyName) {
     try {
         applyDifficulty(difficultyName);
@@ -552,6 +569,7 @@ void Game::startGame(const std::string& difficultyName) {
     }
 }
 
+//绘制菜单界面，包括背景、标题、说明文字和难度选择按钮
 void Game::drawMenuScreen() {
     if (!m_fontLoaded) {
         return;
@@ -613,6 +631,7 @@ void Game::drawMenuScreen() {
     );
 }
 
+//绘制菜单页的按钮域
 void Game::initMenuButtons() {
     const sf::Vector2f buttonSize{220.f, 52.f};
     const float x = 340.f;
@@ -647,6 +666,7 @@ void Game::handleMenuClick(sf::Vector2f mousePosition) {
     }
 }
 
+//绘制菜单按钮，包括按钮背景和标签文本
 void Game::drawMenuButton(
     const sf::RectangleShape& button,
     const std::string& label,
@@ -674,6 +694,7 @@ void Game::drawMenuButton(
 
     m_window.draw(text);
 }
+
 
 void Game::initDifficulties() {
     m_difficulties["Easy"] = DifficultyConfig{
@@ -705,6 +726,7 @@ void Game::initDifficulties() {
 
     std::cout << "[TEST] Difficulties initialized." << std::endl;
 }
+
 
 void Game::applyDifficulty(const std::string& difficultyName) {
     auto it = m_difficulties.find(difficultyName);
