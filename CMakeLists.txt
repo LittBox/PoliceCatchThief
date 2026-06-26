@@ -10,6 +10,8 @@ list(APPEND CMAKE_PREFIX_PATH "/opt/homebrew/opt/sfml")
 
 find_package(SFML 3 REQUIRED COMPONENTS Graphics Window System)
 
+include_directories(include)
+
 add_executable(PoliceCatchThief
     src/main.cpp
     src/Game.cpp
